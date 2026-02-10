@@ -1,0 +1,24 @@
+apt install strongswan
+
+nano /etc/isec.conf
+
+rtr1:
+config setup
+conn gre1
+	auto=route
+	left=ip rtr1
+	leftauth=psk
+	right=ip rtr2
+	rightauth=psk
+	type=transport
+
+настраиваем IPsec.secrets
+
+nano /etc/ipsec.secrets
+настраиаем ключ он должен быть одинаковымна rtr1 и rtr2
+
+на rtr елаем зеркально
+
+проверка:
+
+ipsec stats

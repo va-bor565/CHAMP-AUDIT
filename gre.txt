@@ -1,0 +1,27 @@
+1 роутер
+modprobe ip_gre  
+nano /etc/modules  
+ip_gre  
+nano /etc/network/interface  
+auto Tunnel1  
+iface Tunnel1 inet tunnel   
+address 10.10.10.1   
+netmask 255.255.255.252  
+mode gre  
+local 2.2.2.100   
+endpoint 3.3.3.100   
+ttl 255  
+
+2 роутер
+modprobe ip_gre  
+nano /etc/modules  
+ip_gre  
+nano /etc/network/interface  
+auto Tunnel1  
+iface Tunnel1 inet tunnel   
+address 10.10.10.2   
+netmask 255.255.255.252  
+mode gre  
+local 3.3.3.100   
+endpoint 2.2.2.100   
+ttl 255

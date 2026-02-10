@@ -1,0 +1,19 @@
+apt install openssh-server
+
+sudo apt install openssh-client
+
+sudo systemctl status ssh
+
+nano /etc/ssh/sshd_config 
+
+Найдите строку, начинающуюся с #Port 22. 
+Удалите символ # для раскомментирования и замените 22 на новый номер порта. Вы можете выбрать его из диапазона от 1 до 65535. Убедитесь, что выбранный порт не используется другой программой.
+
+
+sudo systemctl restart sshd 
+
+ssh user@host -p новый_порт 
+
+user – имя пользователя, 
+host – адрес сервера, 
+новый_порт – номер нового порта, который вы указали ранее.

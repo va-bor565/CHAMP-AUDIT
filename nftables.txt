@@ -1,0 +1,20 @@
+nano /etc/sysctl.conf
+
+table ip filter {
+    chain input {
+        type filter hook input priority 0; policy accept;
+    }
+    chain forward {
+        type filter hook forward priority 0; policy drop;
+        iif "ens34" oif "ens33" accept  
+        iif "ens33" oif "ens34" ct state established,related accept
+        iif "ens35" oif "ens33" accept  
+        iif "ens33" oif "ens35" ct state established,related accept 
+    }
+}
+table ip nat {
+    chain postrouting {
+        type nat hook postrouting priority 100; policy accept;
+        oif "ens33" masquerade 
+    }
+}
