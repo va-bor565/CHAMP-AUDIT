@@ -1,0 +1,54 @@
+ Файл /etc/ipsec.conf (одинаков на обоих роутерах, кроме left/right)
+nginx
+config setup
+    charondebug="ike 2, knl 2, cfg 2"
+    uniqueids=no
+
+conn gre-over-ipsec
+    auto=route
+    type=transport                # обязательно Transport mode
+    keyexchange=ikev2
+    authby=secret                # аутентификация по PSK
+
+    left=<ваш_локальный_IP>      # IP адрес этого роутера (например, 4.4.4.100)
+    leftid=<ваш_локальный_IP>    # обычно совпадает с left
+    leftprotoport=gre            # защищаем только протокол GRE (47)
+
+    right=<удаленный_IP>         # IP адрес соседнего роутера (например, 5.5.5.100)
+    rightid=<удаленный_IP>
+    rightprotoport=gre
+
+    ike=aes256-sha256-modp2048!  # шифрование IKE Phase 1
+    esp=aes256-sha256-modp2048!  # шифрование ESP Phase 2
+    dpdaction=restart
+    dpddelay=30s
+    dpdtimeout=120s
+    margin=10m
+    rekey=yes
+    keyingtries=%forever
+На втором роутере просто поменяйте местами left и right.
+
+3. Файл /etc/ipsec.secrets (одинаков на обоих роутерах)
+text
+<локальный_IP> <удаленный_IP> : PSK "ваш_очень_сложный_ключ"
+Или универсальный вариант (если не нужно различать пиров):
+
+text
+: PSK "ваш_очень_сложный_ключ"
+Обязательно установите права доступа:
+
+bash
+chmod 600 /etc/ipsec.secrets
+chown root:root /etc/ipsec.secrets
+
+вывод првоерка
+tcpdump -i any -n proto 47   # не должно быть пакетов GRE в открытом виде
+tcpdump -i any -n esp        # должны быть пакеты ESP
+
+
+вывод если гуд
+listening on ens37, link-type EN10MB (Ethernet), snapshot length 262144 bytes
+^C
+0 packets captured
+0 packets received by filter
+0 packets dropped by kernel
