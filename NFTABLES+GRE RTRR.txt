@@ -1,0 +1,36 @@
+#!/usr/sbin/nft -f
+
+flush ruleset
+
+table inet filter {
+    chain input {
+        type filter hook input priority 0; policy drop;
+        
+        iifname "lo" accept
+        ct state { established, related } accept
+        ip protocol gre accept
+        ip protocol icmp accept
+        udp dport 500 accept
+        udp dport 53 accept
+        tcp dport 22 ip saddr 10.5.5.1 accept      # из GRE туннеля (RTR-L)
+        tcp dport 22 ip saddr 5.5.5.0/24 accept    # от ISP
+        tcp dport 22 ip saddr 172.16.100.0/24 accept  # локальная сеть
+        ip saddr { 5.5.5.0/24, 10.5.5.0/30 } accept
+        ip saddr 172.16.100.0/24 accept
+    }
+    
+    chain forward {
+        type filter hook forward priority 0; policy accept;
+    }
+    
+    chain output {
+        type filter hook output priority 0; policy accept;
+    }
+}
+
+table ip nat {
+    chain postrouting {
+        type nat hook postrouting priority 100;
+        ip saddr 172.16.100.0/24 oifname "ens37" counter masquerade
+    }
+}

@@ -1,0 +1,9 @@
+SSH 
+sudo ss -tlnp | grep :22 
+
+вывод 
+
+LISTEN 0 128 0.0.0.0:22 0.0.0.0:*  users:(("sshd",pid=...,fd=...))
+
+если тут лупбек то надо зайти сюда sudo nano /etc/ssh/sshd_config
+и отредактировать закоментить экей ListenAddress 0.0.0.0
